@@ -24,16 +24,16 @@ const Addtask = ({addtodo, setAddtodo}) => {
   }
 
     return ( 
-      <>
-      <form onSubmit={handleSubmit}>      
-        <input type="text" 
-          required
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          />
-        <button>Add</button>
-      </form>
-      </>  
+      <div>
+        <form onSubmit={handleSubmit}>      
+          <input type="text" 
+            required
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            />
+          <button>Add</button>
+        </form>
+      </div>  
      ); 
 }
  
