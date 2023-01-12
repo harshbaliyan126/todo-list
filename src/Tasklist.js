@@ -1,3 +1,5 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+
 const Tasklist = ({
   tasks,
   deletetodo,
@@ -5,6 +7,7 @@ const Tasklist = ({
   edittodo,
   setEdittodo,
 }) => {
+  const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
   const handleClick = (id) => {
     fetch(`http://localhost:8000/todo/${id}`, {
       method: `Delete`,
@@ -38,38 +41,39 @@ const Tasklist = ({
   };
 
   return (
-    <div>
-      <table>
-        <tbody>
-          {tasks.map((t) => (
-            <tr key={t.id}>
-              <th scope="row">
-                <input
-                  type="checkbox"
-                  name="tasks"
-                  value={t.id}
-                  checked={t.status}
-                  onChange={(e) => {
-                    handleCheck(t.id, e.target.checked, t.task);
-                  }}
-                />
-              </th>
-              <td>
-                {t.status === true ? (
-                  <span>
-                    <del> {t.task} </del>
-                  </span>
-                ) : (
-                  <span> {t.task} </span>
-                )}
-              </td>
-              <td>
-                <button onClick={() => handleClick(t.id)}>X</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div ref={parent}>
+      {tasks.map((t) => (
+        <article
+          key={t.id}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0.5rem",
+          }}
+        >
+          <input
+            type="checkbox"
+            name="tasks"
+            value={t.id}
+            checked={t.status}
+            onChange={(e) => {
+              handleCheck(t.id, e.target.checked, t.task);
+            }}
+          />
+          {t.status === true ? (
+            <span>
+              <del> {t.task} </del>
+            </span>
+          ) : (
+            <span> {t.task} </span>
+          )}
+          {/* <button onClick={() => handleClick(t.id)}>X</button> */}
+          <a href="#" role="button" onClick={() => handleClick(t.id)}>
+            X
+          </a>
+        </article>
+      ))}
     </div>
   );
 };
