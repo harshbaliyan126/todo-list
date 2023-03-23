@@ -1,26 +1,24 @@
 import { useState } from "react";
+import { useQueryClient, useMutation} from "react-query";
+import { addTodo } from "./crud";
 
-const Addtask = ({addtodo, setAddtodo}) => {
+const Addtask = () => {
 
   const [task, setTask] = useState(``);
+
+  const QueryClient = useQueryClient();
+
+  const addTodoMutation = useMutation(addTodo ,{
+    onSuccess: () => {
+      QueryClient.invalidateQueries("todos");
+    }
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const todo = {task, status: false };
+    addTodoMutation.mutate(todo);
     setTask(``);
-    fetch(`http://localhost:8000/todo`, {
-      method: 'POST',
-      headers: { "Content-Type" : "application/json"},
-      body: JSON.stringify(todo)
-    }).then(() => {
-      console.log(`POST: New task Added!`);
-      if(addtodo){
-        setAddtodo(false);
-      }
-      else{
-        setAddtodo(true);
-      }
-    }).catch( () => console.log(`POST: Error!`))
   }
 
     return ( 

@@ -1,43 +1,29 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useQueryClient, useMutation } from "react-query";
+import { deleteTodo, updateCheck } from "./crud";
 
-const Tasklist = ({
-  tasks,
-  deletetodo,
-  setDeletetodo,
-  edittodo,
-  setEdittodo,
-}) => {
+const Tasklist = ({ tasks }) => {
   const [parent, enableAnimations] = useAutoAnimate(/* optional config */);
+  const QueryClient = useQueryClient();
+
+  const deleteTodoMutation = useMutation(deleteTodo, {
+    onSuccess: () => {
+      QueryClient.invalidateQueries("todos");
+    }
+  })
+
+  const updateCheckMutation = useMutation(updateCheck, {
+    onSuccess: () => {
+      QueryClient.invalidateQueries("todos");
+    }
+  })
+
   const handleClick = (id) => {
-    fetch(`http://localhost:8000/todo/${id}`, {
-      method: `Delete`,
-    })
-      .then(() => {
-        console.log(`Delete: Delething this task.`);
-        if (deletetodo) {
-          setDeletetodo(false);
-        } else {
-          setDeletetodo(true);
-        }
-      })
-      .catch(() => console.log("Delete: Error!"));
+    deleteTodoMutation.mutate(id);
   };
 
-  const handleCheck = (id, nextStatus, task) => {
-    fetch(`http://localhost:8000/todo/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ task, status: nextStatus }),
-    })
-      .then(() => {
-        console.log("PUT: Edit Successfull ! ");
-        if (edittodo) {
-          setEdittodo(false);
-        } else {
-          setEdittodo(true);
-        }
-      })
-      .catch((e) => console.log(e, "PUT: Error"));
+  const handleCheck = (todo) => {
+    updateCheckMutation.mutate({...todo, status: !todo.status});
   };
 
   return (
@@ -58,7 +44,7 @@ const Tasklist = ({
             value={t.id}
             checked={t.status}
             onChange={(e) => {
-              handleCheck(t.id, e.target.checked, t.task);
+              handleCheck(t);
             }}
           />
           {t.status === true ? (

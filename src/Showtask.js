@@ -1,19 +1,15 @@
+import { useQuery } from "react-query";
+import { getTodo } from "./crud";
 import Tasklist from "./Tasklist";
-import { useState } from "react";
-import useFetch from "./useFetch";
 
-const Showtask = ({addtodo}) => {
-
-    const [deletetodo, setDeletetodo] = useState(false);
-    const [edittodo, setEdittodo] = useState(false);
-
-    const url = `http://localhost:8000/todo`;
-    const [data, error] = useFetch(url, addtodo, deletetodo, edittodo);
+const Showtask = () => {
+    const {isLoading, isError, error, data} = useQuery("todos", getTodo);
 
     return (
         <div>
-            {error && <div>{ error }</div>}
-            {data && <Tasklist tasks={data} deletetodo={deletetodo} setDeletetodo={setDeletetodo} edittodo={edittodo} setEdittodo={setEdittodo}/>}
+            {isLoading && <div> Loading... </div>}
+            {isError && <div> {error.message} </div>}
+            {data && <Tasklist tasks={data}/>}  
         </div>
      );
 }
